@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react'
-import { cn } from "../../lib/utils"
-import { Card, CardContent } from "@/components/ui/card"
+import React, { useEffect, useState, useRef } from 'react';
+import { cn } from "../../lib/utils";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 // Utility function to parse markdown-like syntax
 const parseSyntax = (text) => {
@@ -32,19 +33,55 @@ const ConversationWindow = ({ messages, setMessages }) => {
   return (
     <div>
       {messages?.map((message, index) => (
-        <div style={{ marginY: '10px' }} key={index} className={cn("flex my-3", message.role === "user" ? "justify-end" : "justify-start")}>
+        <div
+          key={index}
+          className={cn(
+            "flex my-4",
+            message.role === "user" ? "justify-end" : "justify-start"
+          )}
+        >
           <Card
-            className={cn("max-w-[80%]", message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted")}
+            className={cn(
+              "max-w-[80%] overflow-hidden shadow-md",
+              message.role === "user"
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted"
+            )}
           >
-            <CardContent className="px-4 !py-0.5">
+            <CardContent className="px-4 py-3">
               <p dangerouslySetInnerHTML={{ __html: parseSyntax(message.content) }} />
             </CardContent>
+
+            {/* Only show model and provider for assistant messages */}
+            {message.role === "assistant" && (message.model || message.provider) && (
+              <CardFooter className="px-4 py-1 border-t border-border/40 flex gap-1 items-center opacity-55">
+                {message.model && (
+                  <Badge
+                    style={{ fontSize: "16px" }}
+                    variant="secondary"
+                    className="text-m font-medium bg-secondary/80"
+                  >
+                    {message.model}
+                  </Badge>
+                )}
+
+                {message.provider && (
+                  <Badge
+                    style={{ fontSize: "16px" }}
+                    variant="secondary"
+                    className="text-m font-medium bg-secondary/80"
+                  >
+                    {message.provider}
+                  </Badge>
+                )}
+              </CardFooter>
+            )}
           </Card>
         </div>
       ))}
       <div ref={messagesEndRef} />
     </div>
-  )
-}
+  );
+};
 
 export default ConversationWindow;
