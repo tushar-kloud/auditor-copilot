@@ -10,6 +10,8 @@ import { MessageCircle, FileText, FileCheck } from "lucide-react"
 import ChatInterface from "../components/chatInterface"
 import Sidebar from "../globalComponents/SideBar"
 import ModelConfigsidebar from "../globalComponents/ModelConfigsidebar"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../components/ui/tooltip"
+import { Trash } from "lucide-react";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("chat")
@@ -18,12 +20,44 @@ export default function Home() {
   const [model, setModel] = useState(localStorage.getItem("model") || "GPT-4o-mini");
   const [provider, setProvider] = useState(localStorage.getItem("provider") || "azureopenai");
 
+  const [cleared, setCleared] = useState(false);
+
   // useEffect(() => {
   //   const storedModel = localStorage.getItem("model");
   //   const storedProvider = localStorage.getItem("provider");
   //   setModel(storedModel);
   //   setProvider(storedProvider);
   // }, []);
+
+  const clearConversation = (tab) => {
+    // Clear the conversation based on the active tab
+    if (tab === "chat") {
+      // Clear chat conversation logic
+      setMessage("");
+      localStorage.removeItem("digital-audit-chatMessages")
+      setCleared(true)
+    } else if (tab === "execute-analysis-scenario") {
+      // Clear execute analysis scenario conversation logic
+      setMessage("");
+      localStorage.removeItem("execute-analysis-scenario-chatMessages")
+      setCleared(true)
+    } else if (tab === "document-intelligence") {
+      // Clear document intelligence conversation logic
+      setMessage("");
+      localStorage.removeItem("document-intelligence-chatMessages")
+      setCleared(true)
+    }
+  }
+
+  useEffect(() => {
+    if (cleared) {
+      const timeout = setTimeout(() => {
+        setCleared(false)
+      }, 100)
+      return () => clearTimeout(timeout)
+    }
+  }, [cleared])
+  
 
   return (
     <div className="flex h-[calc(100vh-3.9rem)] bg-slate-50 dark:bg-slate-900">
@@ -41,7 +75,30 @@ export default function Home() {
           </h1>
 
           {/* Model & Provider Info */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  className="mb-2 hover:text-destructive transition-colors"
+                  aria-label="Clear this conversation"
+                  onClick={() => {
+                    // your clear conversation logic here
+                    clearConversation(activeTab)
+                  }}
+                >
+                  <Trash className="w-4 h-4" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Clear this conversation</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
           <div className="text-sm text-muted-foreground flex flex-col items-end">
+            {/* <div> */}
+
+            {/* </div> */}
             <span className="font-medium">
               Provider: <span className="text-primary">{provider || "None"}</span>
             </span>
@@ -54,18 +111,13 @@ export default function Home() {
         <main className="flex-1 p-6 overflow-auto">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsContent value="chat" className="mt-0">
-              <ChatInterface action={'digital-audit'} />
+              <ChatInterface key={`chat-${cleared}`} action={'digital-audit'} />
             </TabsContent>
-            {/* <TabsContent value="digital-audit" className="mt-0">
-              <InvoiceGeneration />
-            </TabsContent> */}
             <TabsContent value="execute-analysis-scenario" className="mt-0">
-              <ChatInterface action={'execute-analysis-scenario'} />
-              {/* <InvoiceGeneration /> */}
+              <ChatInterface key={`execute-${cleared}`} action={'execute-analysis-scenario'} />
             </TabsContent>
             <TabsContent value="document-intelligence" className="mt-0">
-              <ChatInterface action={'document-intelligence'} />
-              {/* <ReconcilePO /> */}
+              <ChatInterface key={`doc-${cleared}`} action={'document-intelligence'} />
             </TabsContent>
           </Tabs>
         </main>

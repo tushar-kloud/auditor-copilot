@@ -18,7 +18,7 @@ export default function FileUploadDialog({ onFilesUploaded, trigger }) {
   const [open, setOpen] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState([]);
 
-//   const dispatch = useDispatch();
+  //   const dispatch = useDispatch();
 
   const handleFileDrop = (e) => {
     e.preventDefault();
@@ -26,12 +26,45 @@ export default function FileUploadDialog({ onFilesUploaded, trigger }) {
     handleFiles(files);
   };
 
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+  const VALID_MIME_TYPES = {
+    'application/pdf': true,
+    'application/msword': true,
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': true,
+    'application/vnd.ms-excel': true,
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': true,
+    'text/csv': true,
+    'image/png': true,
+    'image/jpeg': true,
+    'audio/mpeg': true
+  };
+
   const handleFiles = (files) => {
     const limitedFiles = files.slice(0, 5 - uploadedFiles.length);
-    const newFiles = limitedFiles.map((file) => ({
-      file,
-      status: "pending", // 'pending' | 'uploading' | 'success' | 'error'
-    }));
+    const newFiles = limitedFiles.map((file) => {
+      // Check file size
+      if (file.size > MAX_FILE_SIZE) {
+        return {
+          file,
+          status: "error",
+          errorMessage: "File too large (max 10MB)"
+        };
+      }
+
+      if (!VALID_MIME_TYPES[file.type]) {
+        return {
+          file,
+          status: "error",
+          errorMessage: "Invalid file type"
+        };
+      }
+
+      return {
+        file,
+        status: "pending"
+      };
+    });
+
     setUploadedFiles((prev) => [...prev, ...newFiles]);
   };
 
@@ -47,23 +80,23 @@ export default function FileUploadDialog({ onFilesUploaded, trigger }) {
   const handleUpload = async () => {
     const results = [];
     const updatedFiles = [...uploadedFiles];
-  
+
     console.log("Checking files for upload...");
     for (let i = 0; i < uploadedFiles.length; i++) {
       const item = uploadedFiles[i];
-  
+
       // Skip already uploaded files
       if (item.status === "success") {
         continue;
       }
-  
+
       // Set status to 'uploading'
       updatedFiles[i] = { ...item, status: "uploading" };
       setUploadedFiles([...updatedFiles]);
-  
+
       try {
         console.log("Uploading file:", item.file.name);
-        const fileData =  await uploadFileAPI(item.file);
+        const fileData = await uploadFileAPI(item.file);
         // console.log('response: ',fileData.file_path);
         updatedFiles[i] = { ...item, status: "success", filePath: fileData.file_path };
         // results.push(item.file);
@@ -80,20 +113,20 @@ export default function FileUploadDialog({ onFilesUploaded, trigger }) {
         updatedFiles[i] = { ...item, status: "error" };
         console.error("Upload failed for", item.file.name, error);
       }
-  
+
       setUploadedFiles([...updatedFiles]);
     }
-  
+
     const successfulFiles = results.map((f) => f.name);
     const prev = JSON.parse(localStorage.getItem("uploadedFiles") || "[]");
     localStorage.setItem("uploadedFiles", JSON.stringify([...prev, ...successfulFiles]));
-  
+
     if (results.length > 0) {
       onFilesUploaded(results);
     }
   };
-  
-  
+
+
   const getStatusText = (status) => {
     switch (status) {
       case "uploading":
@@ -125,7 +158,9 @@ export default function FileUploadDialog({ onFilesUploaded, trigger }) {
           onClick={() => fileInputRef.current.click()}
         >
           <p>Drag and drop a file here, or click to select</p>
-          <p className="text-sm text-gray-500">({uploadedFiles.length}/5 files)</p>
+          <p className="text-sm text-gray-500">
+            ({uploadedFiles.length}/5 files) — Max file size: 5MB
+          </p>
           <input
             ref={fileInputRef}
             type="file"
