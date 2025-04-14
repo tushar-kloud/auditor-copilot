@@ -43,7 +43,7 @@ export default function ChatInterface({action}) {
           {/* </div> */}
         </div>
         <div className="flex-shrink-0">
-          <UserInputs message={messages} setMessages={setMessages} />
+          <UserInputs showSuggestions={true} message={messages} setMessages={setMessages} />
         </div>
       </div>
     ) : (

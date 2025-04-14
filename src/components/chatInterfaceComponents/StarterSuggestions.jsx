@@ -33,7 +33,8 @@ const StarterSuggestions = ({ suggestionObjectId, messages, setMessages }) => {
                     <UserInputs promptInputValue={inputValue} setMessages={setMessages} />
                 </div>
                 <div>
-                    <p style={{ fontSize: '20px', marginBottom: '20px' }}>Or choose from the options below...</p>
+                    {/* <p style={{ fontSize: '20px', marginBottom: '20px' }}>Or choose from the options below...</p> */}
+                    <p style={{ fontSize: '20px', marginBottom: '20px' }}>{suggestionsObject?.promptOptionsMessage ? suggestionsObject?.promptOptionsMessage : "Or choose from the options below..."}</p>
                 </div>
 
                 {/* <div className="justify-center"> */}

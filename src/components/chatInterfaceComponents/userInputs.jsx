@@ -1,18 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Send, Paperclip, Loader2 } from "lucide-react";
+import { Send, Paperclip, Loader2, Sparkles } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../components/ui/dialog";
+import { Badge } from "../../../components/ui/badge";
 import FileUploadDialog from "./FileUploadDialog";
 import { cn } from "../../lib/utils";
+import { starterSuggestionsArray } from "../../globalConstants/useCaseConstants";
 import { AI_PLAYGROUND_WORKFLOWS } from "../../redux/actions/auditActions";
 
-const UserInputs = ({ promptInputValue, setMessages }) => {
+const UserInputs = ({ showSuggestions, promptInputValue, setMessages }) => {
   const [inputValue, setInputValue] = useState("");
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
 
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedTopic, setSelectedTopic] = useState(null);
+
+  // const [suggestionVisible, setSuggestionVisible] = useState(showSuggestions || false);
+
   const model = localStorage.getItem("model") || "gpt-4.o-mini";
   const provider = localStorage.getItem("provider") || "azure openai";
   const flowId = AI_PLAYGROUND_WORKFLOWS.AGENT.flowId;
+  
 
   // Effect to sync with promptInputValue changes
   useEffect(() => {
@@ -52,7 +62,7 @@ const UserInputs = ({ promptInputValue, setMessages }) => {
       setUploading(true);
       // Update localStorage
       localStorage.setItem("responseloading", "true");
-      
+
       const newMessages = [];
 
       if (inputValue.trim()) {
@@ -77,7 +87,7 @@ const UserInputs = ({ promptInputValue, setMessages }) => {
           input_value: `Use ${provider} resource to answer the following question: '${inputValue}'`,
           output_type: "chat",
           input_type: "chat",
-          tweaks:{
+          tweaks: {
             "Chroma-ZPruW": {
               "allow_duplicates": false,
               "chroma_server_cors_allow_origins": "",
@@ -142,6 +152,28 @@ const UserInputs = ({ promptInputValue, setMessages }) => {
     setFiles((prev) => [...prev, ...newFiles]);
   };
 
+
+  const handlePromptClick = (prompt) => {
+    setInputValue(prompt);
+    setDialogOpen(false);
+    setSelectedCategory(null);
+    setSelectedTopic(null);
+  };
+
+  const resetSelections = () => {
+    setSelectedTopic(null);
+  };
+
+  const getCurrentCategory = () => {
+    return starterSuggestionsArray.find(category => category.id === selectedCategory);
+  };
+
+  const getCurrentTopic = () => {
+    const category = getCurrentCategory();
+    if (!category || !selectedTopic) return null;
+    return category.topics.find(topic => topic.label === selectedTopic);
+  };
+
   return (
     <div>
       {files.length > 0 && (
@@ -162,6 +194,17 @@ const UserInputs = ({ promptInputValue, setMessages }) => {
           trigger={<Paperclip className="h-5 w-5 text-gray-500 hover:text-gray-700 cursor-pointer" />}
           onFilesUploaded={handleModalUpload}
         />
+        {showSuggestions && (
+          <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setDialogOpen(true)}
+          className="h-9 w-9 rounded-full p-0"
+          title="Conversation starters"
+        >
+          <Sparkles className="h-5 w-5 text-indigo-500 hover:text-indigo-700" />
+        </Button>
+        )}
 
         <textarea
           placeholder="Type your message here..."
@@ -183,6 +226,108 @@ const UserInputs = ({ promptInputValue, setMessages }) => {
           {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
         </Button>
       </div>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-gray-800">
+              Conversation Starters
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="mt-4">
+            {/* Category Selection */}
+            {!selectedCategory && (
+              <div className="space-y-6">
+                <div className="text-center text-gray-600">
+                  Choose a category to get started
+                </div>
+                <div className="flex flex-wrap justify-center gap-3">
+                  {starterSuggestionsArray.map((category) => (
+                    <Badge
+                      key={category.id}
+                      className={`${category.color} px-4 py-2 rounded-full shadow-sm font-medium cursor-pointer`}
+                      onClick={() => setSelectedCategory(category.id)}
+                    >
+                      {category.label}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Selected Category View */}
+            {selectedCategory && !selectedTopic && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-bold text-gray-800">
+                    {getCurrentCategory()?.label}
+                  </h3>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => setSelectedCategory(null)}
+                    className="text-sm text-gray-500"
+                  >
+                    Back to categories
+                  </Button>
+                </div>
+
+                <div className="text-center text-gray-600 p-2">
+                  {getCurrentCategory()?.heroMessage}
+                </div>
+
+                <div className="flex flex-wrap justify-center gap-3">
+                  {getCurrentCategory()?.topics.map((topic) => (
+                    <Badge
+                      key={topic.label}
+                      className={`${topic.color} px-4 py-2 rounded-full shadow-sm font-medium cursor-pointer`}
+                      onClick={() => setSelectedTopic(topic.label)}
+                    >
+                      {topic.label}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Topic Prompts View */}
+            {selectedCategory && selectedTopic && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                      <span className={`w-3 h-3 rounded-full ${getCurrentTopic()?.color}`}></span>
+                      {selectedTopic}
+                    </h3>
+                    <p className="text-sm text-gray-500">{getCurrentCategory()?.label}</p>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={resetSelections}
+                    className="text-sm text-gray-500"
+                  >
+                    Back to topics
+                  </Button>
+                </div>
+
+                <div className="mt-4 space-y-2">
+                  {getCurrentTopic()?.prompts.map((prompt, index) => (
+                    <Button
+                      key={index}
+                      variant="outline"
+                      className="w-full text-left p-3 justify-start rounded-md text-gray-700 hover:bg-gray-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition duration-300"
+                      onClick={() => handlePromptClick(prompt)}
+                    >
+                      <span className="font-medium">{prompt}</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

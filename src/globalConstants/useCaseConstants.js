@@ -3,6 +3,7 @@ export const starterSuggestionsArray = [
         id: "digital-audit",
         label: "Digital Audit",
         heroMessage : "Enhance your digital audit process with AI-driven insights.",
+        promptOptionsMessage : "Or choose from the following digital audit scenarios below...",
         color: "bg-cyan-200 text-cyan-700",
         topics: [
             {
@@ -55,6 +56,7 @@ export const starterSuggestionsArray = [
         id: "execute-analysis-scenario",
         label: "Execute Analysis Scenarios",
         heroMessage : "Execute analysis scenarios to gain deeper insights into your audit data.",
+        promptOptionsMessage : "Or choose from the following analysis scenarios below...",
         color: "bg-green-200 text-green-700",
         topics: [
             {
@@ -107,6 +109,7 @@ export const starterSuggestionsArray = [
         id: "document-intelligence",
         label: "Document Intelligence",
         heroMessage : "Leverage document intelligence to enhance your audit documentation process.",
+        promptOptionsMessage : "Or choose from the following document intelligence scenarios below...",
         color: "bg-yellow-200 text-yellow-700",
         topics: [
             {
