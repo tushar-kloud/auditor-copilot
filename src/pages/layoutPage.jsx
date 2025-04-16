@@ -29,17 +29,17 @@ export default function Home() {
     // Clear the conversation based on the active tab
     if (tab === "chat") {
       // Clear chat conversation logic
-      setMessage("");
+      setConversation("");
       localStorage.removeItem("digital-audit-chatMessages")
       setCleared(true)
     } else if (tab === "execute-analysis-scenario") {
       // Clear execute analysis scenario conversation logic
-      setMessage("");
+      setConversation("");
       localStorage.removeItem("execute-analysis-scenario-chatMessages")
       setCleared(true)
     } else if (tab === "document-intelligence") {
       // Clear document intelligence conversation logic
-      setMessage("");
+      setConversation("");
       localStorage.removeItem("document-intelligence-chatMessages")
       setCleared(true)
     }
@@ -109,6 +109,7 @@ export default function Home() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
+                    disabled={conversation.length>0 ? false : true}
                     className="hover:text-destructive transition-colors"
                     aria-label="Download this conversation"
                     onClick={() => triggerConversationDownload(activeTab)}
