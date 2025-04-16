@@ -1,104 +1,159 @@
-// hooks/useGenerateInvoicePDF.js
-import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
-import { format } from "date-fns";
+import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 
-const useGenerateInvoicePDF = (invoiceData) => {
-  const generatePDF = () => {
-    // Create the document with proper configuration
-    const doc = new jsPDF();
+const downloadConversation = async ({messages}) => {
+  console.log('Starting PDF download process');
+  
+  try {
+    // Create a new PDF document
+    const pdfDoc = await PDFDocument.create();
+    let page = pdfDoc.addPage([595.28, 841.89]); // A4
+    const { width, height } = page.getSize();
     
-    doc.setFontSize(20);
-    doc.setFont("helvetica", "bold");
-    doc.text("INVOICE", 105, 15, { align: "center" });
+    // Embed fonts
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    const fontSize = 12;
+    const lineHeight = 18;
     
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.text(`Invoice Number: ${invoiceData.invoice_number}`, 14, 30);
-    doc.text(`Invoice Date: ${format(new Date(invoiceData.invoice_date), 'dd/MM/yyyy')}`, 14, 35);
-    doc.text(`PO Number: ${invoiceData.po_number || 'N/A'}`, 14, 40);
+    let y = height - 40;
     
-    const vendorInfoX = 196;
-    doc.text(`Vendor:`, vendorInfoX, 30, { align: "right" });
-    doc.text(`${invoiceData.vendor.name}`, vendorInfoX, 35, { align: "right" });
-    doc.text(`${invoiceData.vendor.address}`, vendorInfoX, 40, { align: "right" });
-    doc.text(`GSTIN: ${invoiceData.vendor.gstin}`, vendorInfoX, 45, { align: "right" });
+    // Text adding function
+    const addText = (text, options = {}) => {
+      const {
+        fontType = font,
+        color = rgb(0, 0, 0),
+        indent = 0,
+        maxWidth = width - 80,
+      } = options;
+      
+      if (!text || typeof text !== 'string') {
+        console.warn('Invalid text passed to addText:', text);
+        return;
+      }
+      
+      const words = text.split(" ");
+      let line = "";
+      for (let i = 0; i < words.length; i++) {
+        const testLine = line + words[i] + " ";
+        const testWidth = fontType.widthOfTextAtSize(testLine, fontSize);
+        if (testWidth > maxWidth) {
+          if (y < 40) {
+            page = pdfDoc.addPage([595.28, 841.89]);
+            y = height - 40;
+          }
+          page.drawText(line.trim(), {
+            x: 40 + indent,
+            y,
+            size: fontSize,
+            font: fontType,
+            color,
+          });
+          y -= lineHeight;
+          line = words[i] + " ";
+        } else {
+          line = testLine;
+        }
+      }
+      if (line.trim() !== "") {
+        if (y < 40) {
+          page = pdfDoc.addPage([595.28, 841.89]);
+          y = height - 40;
+        }
+        page.drawText(line.trim(), {
+          x: 40 + indent,
+          y,
+          size: fontSize,
+          font: fontType,
+          color,
+        });
+        y -= lineHeight;
+      }
+    };
     
-    doc.setFontSize(11);
-    doc.setFont("helvetica", "bold");
-    doc.text("Sold To:", 14, 55);
-    doc.text("Ship To:", 105, 55);
+    // Add title
+    page.drawText("🧠 Chat Transcript", {
+      x: 40,
+      y,
+      size: 20,
+      font: fontBold,
+      color: rgb(0.1, 0.2, 0.4),
+    });
+    y -= 30;
     
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.text(`${invoiceData.sold_to.name}`, 14, 60);
-    doc.text(`${invoiceData.sold_to.address}`, 14, 65);
-    doc.text(`GSTIN: ${invoiceData.sold_to.gstin}`, 14, 70);
+    // Validate messages
+    if (!Array.isArray(messages)) {
+      console.error('Messages is not an array:', messages);
+      throw new Error('Messages must be an array');
+    }
     
-    doc.text(`${invoiceData.ship_to.name}`, 105, 60);
-    doc.text(`${invoiceData.ship_to.address}`, 105, 65);
-    
-    const tableColumns = [
-      { header: "Description", dataKey: "description" },
-      { header: "Qty", dataKey: "quantity" },
-      { header: "Unit Price (₹)", dataKey: "unit_rate" },
-      { header: "Amount (₹)", dataKey: "amount" }
-    ];
-    
-    const tableRows = invoiceData.line_items.map(item => ({
-      description: item.description,
-      quantity: item.quantity,
-      unit_rate: item.unit_rate.toFixed(2),
-      amount: item.amount.toFixed(2)
-    }));
-    
-    // Use autoTable as a standalone function with doc as first parameter
-    autoTable(doc, {
-      head: [tableColumns.map(col => col.header)],
-      body: tableRows.map(row => tableColumns.map(col => row[col.dataKey])),
-      startY: 80,
-      theme: 'grid',
-      headStyles: { fillColor: [66, 66, 66], textColor: [255, 255, 255] },
-      foot: [
-        [{ content: 'Subtotal', colSpan: 3, styles: { halign: 'right', fontStyle: 'bold' } }, `₹${invoiceData.subtotal.toFixed(2)}`],
-        [{ content: 'CGST', colSpan: 3, styles: { halign: 'right' } }, `₹${invoiceData.taxes.cgst.toFixed(2)}`],
-        [{ content: 'SGST', colSpan: 3, styles: { halign: 'right' } }, `₹${invoiceData.taxes.sgst.toFixed(2)}`],
-        [{ content: 'Total Tax', colSpan: 3, styles: { halign: 'right' } }, `₹${(invoiceData.taxes.cgst + invoiceData.taxes.sgst).toFixed(2)}`],
-        [{ content: 'Total Amount', colSpan: 3, styles: { halign: 'right', fontStyle: 'bold' } }, `₹${invoiceData.total_amount.toFixed(2)}`]
-      ]
+    // Add messages
+    messages.forEach((msg, index) => {
+      try {
+        if (!msg || typeof msg !== 'object') {
+          console.warn(`Invalid message at index ${index}:`, msg);
+          return;
+        }
+        
+        const isUser = msg.role === "user";
+        const prefix = isUser ? "You: " : "Assistant:";
+        const roleColor = isUser ? rgb(0.1, 0.5, 0.2) : rgb(0.2, 0.2, 0.6);
+        
+        addText(`${prefix}`, {
+          fontType: fontBold,
+          color: roleColor,
+        });
+        
+        if (msg.content) {
+          addText(msg.content, {
+            indent: 10,
+          });
+        } else {
+          addText("(No content)", { indent: 10 });
+        }
+        
+        if (msg.model || msg.provider) {
+          addText(`Model: ${msg.model || "N/A"} | Provider: ${msg.provider || "N/A"}`, {
+            color: rgb(0.5, 0.5, 0.5),
+            indent: 10,
+          });
+        }
+        
+        y -= 10;
+      } catch (err) {
+        console.error(`Error processing message at index ${index}:`, err);
+      }
     });
     
-    // Access the final Y position from the last table
-    const finalY = doc.lastAutoTable.finalY || 150;
+    // Save the PDF
+    const pdfBytes = await pdfDoc.save();
     
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "bold");
-    doc.text("Amount in Words:", 14, finalY + 10);
-    doc.setFont("helvetica", "normal");
-    doc.text(invoiceData.amount_in_words, 50, finalY + 10);
-    
-    doc.setFont("helvetica", "bold");
-    doc.text("Notes:", 14, finalY + 20);
-    doc.setFont("helvetica", "normal");
-    let noteY = finalY + 25;
-    invoiceData.notes.forEach(note => {
-      doc.text(`• ${note}`, 14, noteY);
-      noteY += 5;
-    });
-    
-    const pageHeight = doc.internal.pageSize.height;
-    doc.setFontSize(8);
-    doc.text("Thank you for your business!", 105, pageHeight - 20, { align: "center" });
-    
-    doc.line(14, pageHeight - 40, 60, pageHeight - 40);
-    doc.line(150, pageHeight - 40, 196, pageHeight - 40);
-    doc.text("Authorized Signature", 37, pageHeight - 35, { align: "center" });
-    doc.text("Customer Signature", 173, pageHeight - 35, { align: "center" });
-    
-    doc.save(`Invoice_${invoiceData.invoice_number}.pdf`);
-  };
+    // Create a Blob and trigger download
+    const blob = new Blob([pdfBytes], { type: "application/pdf" });
 
-  return generatePDF;
+    console.log('pdf blob ready');
+    
+    
+    // Create a download link and trigger it
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = "conversation.pdf";
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+
+    
+    // Clean up
+    setTimeout(() => {
+      URL.revokeObjectURL(link.href);
+      document.body.removeChild(link);
+    }, 100);
+    
+    console.log('PDF download initiated successfully');
+    return true;
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    return false;
+  }
 };
 
-export default useGenerateInvoicePDF;
+export default downloadConversation;
