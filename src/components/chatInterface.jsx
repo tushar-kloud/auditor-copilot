@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { setAction } from "../redux/actions/actionActions"
 import { starterSuggestionsArray } from "../globalConstants/useCaseConstants"
 
-export default function ChatInterface({action}) {
+export default function ChatInterface({setConversation, action}) {
   const [messages, setMessages] = useState(() => {
     const storedMessages = localStorage.getItem(`${action}-chatMessages`)
     return storedMessages ? JSON.parse(storedMessages) : []
@@ -30,7 +30,8 @@ export default function ChatInterface({action}) {
     if(action){
       dispatch(setAction(action))
     }
-  }, [messages, ])
+    setConversation(messages)
+  }, [messages])
 
   useEffect(() => {
   }, [messages, setMessages])

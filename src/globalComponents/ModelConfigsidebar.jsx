@@ -8,7 +8,7 @@ import { cn } from "../lib/utils";
 import { handler } from "tailwindcss-animate";
 
 const MODEL_PROVIDERS = {
-  azureopenai: ["GPT-4o", "GPT-3.5-turbo", "GPT-4o-mini", "GPT-o3-mini"],
+  azureopenai: ["o3-mini","GPT-4o", "GPT-3.5-turbo", "GPT-4o-mini", "GPT-o3-mini"],
   awsbedrock: ["Cladue 3.7 Sonnet v2", "Claude 3.5 Sonnet v2", "Claude 3.5 Haiku", "Calude 3 Haiku"],
 };
 

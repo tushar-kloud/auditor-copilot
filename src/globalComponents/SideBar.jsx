@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, MessageCircle, FileText, FileCheck, Settings } from "lucide-react";
+import { ChevronLeft, ChevronRight, MessageCircle, FileText, FileCheck, Settings, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "../lib/utils"
 
@@ -76,6 +76,16 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
         >
           <FileText className="mr-2 h-4 w-4" />
           {!collapsed && "Document Intelligence"}
+        </Button>
+        <Button
+          disabled
+          variant={"ghost"}
+          className="w-full justify-start"
+          onClick={() => setActiveTab("document-intelligence")}
+        >
+          {/* <FileText  /> */}
+          <Rocket className="mr-2 h-4 w-4" />
+          {!collapsed && "Use-Case Labs"}
         </Button>
       </nav>
 
