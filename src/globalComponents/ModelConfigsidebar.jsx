@@ -13,7 +13,7 @@ const MODEL_PROVIDERS = {
 };
 
 const DEFAULT_PROVIDER = "azureopenai";
-const DEFAULT_MODEL = "GPT-4o-mini";
+const DEFAULT_MODEL = "o3-mini";
 
 const ModelConfigSidebar = ({ setModel, setProvider }) => {
   const [collapsed, setCollapsed] = useState(true);
@@ -22,10 +22,10 @@ const ModelConfigSidebar = ({ setModel, setProvider }) => {
 
 
   useEffect(() => {
-    setProvider("azureopenai");
-    setModel("GPT-4o-mini");
+    setProvider(DEFAULT_PROVIDER);
+    setModel(DEFAULT_MODEL);
     localStorage.setItem("provider", "azureopenai");
-    localStorage.setItem("model", "GPT-4o-mini");
+    localStorage.setItem("model", "o3-mini");
   }, []);
 
   const handleProviderChange = (value) => {
@@ -33,7 +33,7 @@ const ModelConfigSidebar = ({ setModel, setProvider }) => {
     setProvider(value);
 
     // Set default model based on provider
-    const defaultModel = value === "awsbedrock" ? "Claude 3.5 Sonnet v2" : "GPT-4o-mini";
+    const defaultModel = value === "awsbedrock" ? "Claude 3.5 Sonnet v2" : "o3-mini";
 
     setLocalModel(defaultModel);
     setModel(defaultModel);
