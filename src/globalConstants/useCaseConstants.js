@@ -52,15 +52,15 @@ export const starterSuggestionsArray = [
         ]
     },
     {
-        id: "execute-analysis-scenario",
-        label: "Execute Analysis Scenarios",
-        heroMessage : "Execute analysis scenarios to gain deeper insights into your audit data.",
-        color: "bg-green-200 text-green-700",
-        topics: [
+        "id": "execute-analysis-scenario",
+        "label": "Execute Analysis Scenarios",
+        "heroMessage": "Execute analysis scenarios to gain deeper insights into your audit data.",
+        "color": "bg-green-200 text-green-700",
+        "topics": [
             {
-                label: "Data Mining Techniques",
-                color: "bg-red-200 text-red-700",
-                prompts: [
+                "label": "Data Mining Techniques",
+                "color": "bg-red-200 text-red-700",
+                "prompts": [
                     "What are the best data mining techniques for audit analysis?",
                     "How can predictive analytics enhance audit insights?",
                     "What tools can help with automating data mining processes?",
@@ -69,9 +69,9 @@ export const starterSuggestionsArray = [
                 ]
             },
             {
-                label: "Financial Analysis",
-                color: "bg-purple-200 text-purple-700",
-                prompts: [
+                "label": "Financial Analysis",
+                "color": "bg-purple-200 text-purple-700",
+                "prompts": [
                     "How do financial trends impact audit outcomes?",
                     "What financial ratios are most useful in audits?",
                     "How can forecasting improve the audit process?",
@@ -80,9 +80,9 @@ export const starterSuggestionsArray = [
                 ]
             },
             {
-                label: "Fraud Detection",
-                color: "bg-red-200 text-red-700",
-                prompts: [
+                "label": "Fraud Detection",
+                "color": "bg-red-200 text-red-700",
+                "prompts": [
                     "What analytical methods help detect fraud during audits?",
                     "How do you analyze patterns for fraudulent behavior?",
                     "What role does anomaly detection play in audit fraud detection?",
@@ -91,14 +91,55 @@ export const starterSuggestionsArray = [
                 ]
             },
             {
-                label: "Operational Efficiency",
-                color: "bg-yellow-200 text-yellow-700",
-                prompts: [
+                "label": "Operational Efficiency",
+                "color": "bg-yellow-200 text-yellow-700",
+                "prompts": [
                     "What are the key metrics for analyzing operational efficiency in audits?",
                     "How do operational analyses improve the audit process?",
                     "What role does automation play in operational efficiency?",
                     "How can we assess the effectiveness of operational processes?",
                     "What steps can be taken to optimize auditing operations?"
+                ]
+            },
+            {
+                "label": "BRD-Based Audit Planning",
+                "color": "bg-blue-200 text-blue-700",
+                "prompts": [
+                    "What are the IT controls which can be tested from the BRD?",
+                    "Please provide a summary from the BRD.",
+                    "What are the key features which are getting implemented?",
+                    "What are the primary objectives of the project as outlined in the BRD?",
+                    "Who are the key stakeholders involved in this project?",
+                    "What are the expected deliverables and outcomes?",
+                    "What are the critical success factors for this project?",
+                    "What is included in the project scope, and what is explicitly excluded?",
+                    "Are there any constraints or limitations mentioned in the BRD?",
+                    "Are there any industry standards that the project needs to comply with?",
+                    "What potential risks have been identified in the BRD?",
+                    "Are there any dependencies on existing systems or technologies?",
+                    "What are the user roles and their respective needs as described in the BRD?"
+                ]
+            },
+            {
+                "label": "Analyze Justification Notes",
+                "color": "bg-pink-200 text-pink-700",
+                "prompts": [
+                    "What are the key points outlined in the justification notes?",
+                    "How do justification notes support business decisions?",
+                    "Are there inconsistencies or gaps in the justification provided?",
+                    "How can justification notes be used to validate control effectiveness?",
+                    "What trends or commonalities can be observed across justification notes?"
+                ]
+            },
+            {
+                "label": "Analyze Trial Balance",
+                "color": "bg-indigo-200 text-indigo-700",
+                "prompts": [
+                    "What anomalies can be detected in the trial balance?",
+                    "How does the trial balance reflect financial accuracy?",
+                    "Which accounts show unusual activity or balances?",
+                    "How can we reconcile discrepancies in the trial balance?",
+                    "What insights can be drawn from year-over-year trial balance comparisons?"
                 ]
             }
         ]

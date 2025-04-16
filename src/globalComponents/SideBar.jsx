@@ -24,7 +24,6 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
             <p className="text-sm text-muted-foreground my-2">
               As your personal assistant, I can help you with the following tasks...
             </p>
-
           )}
         </span>
         <span>
