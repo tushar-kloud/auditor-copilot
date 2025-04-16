@@ -15,6 +15,7 @@ export default function ChatInterface({action}) {
   // const [suggestionObject, setSuggestionObject] = useState()
 
   const {actionInfo} = useSelector((state) => state.actionState)
+
   // const { actionInfo } = actionState
 
   const dispatch = useDispatch()
@@ -43,7 +44,7 @@ export default function ChatInterface({action}) {
           {/* </div> */}
         </div>
         <div className="flex-shrink-0">
-          <UserInputs message={messages} setMessages={setMessages} />
+          <UserInputs showSuggestions={true} message={messages} setMessages={setMessages} />
         </div>
       </div>
     ) : (
@@ -55,9 +56,5 @@ export default function ChatInterface({action}) {
         </div>
       </div>
     )
-
   )
 }
-
-
-{/* <StarterSuggestions message={messages} setMessages={setMessages} /> */ }

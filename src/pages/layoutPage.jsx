@@ -1,21 +1,17 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
-import { MessageCircle, FileText, FileCheck } from "lucide-react"
-// import InvoiceGeneration from "@/components/invoiceGeneration.jsx"
-// import ReconcilePO from "@/components/reconcilePo.jsx"
-// import ChatInterface from "@/components/chatInterface.jsx"
-// import InvoiceGeneration from "../components/invoiceGeneration"
-// import ReconcilePO from "../components/reconcilePo"
+import { MessageCircle, FileText, FileCheck, Download } from "lucide-react"
 import ChatInterface from "../components/chatInterface"
 import Sidebar from "../globalComponents/SideBar"
 import ModelConfigsidebar from "../globalComponents/ModelConfigsidebar"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../components/ui/tooltip"
 import { Trash } from "lucide-react";
+import downloadConversation from "../hooks/downloadConversation"
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("chat")
-  const [message, setMessage] = useState("")
+  const [conversation, setConversation] = useState("")
 
   const [model, setModel] = useState(localStorage.getItem("model") || "GPT-4o-mini");
   const [provider, setProvider] = useState(localStorage.getItem("provider") || "azureopenai");
@@ -49,6 +45,22 @@ export default function Home() {
     }
   }
 
+  const triggerConversationDownload = (tab) => {
+    if (tab === "chat") {
+      console.log('chat: ', conversation);
+      downloadConversation(conversation)
+    } else if (tab === "execute-analysis-scenario") {
+      // Clear execute analysis scenario conversation logic
+      console.log('execute: ', conversation);
+      downloadConversation(conversation)
+
+    } else if (tab === "document-intelligence") {
+      // Clear document intelligence conversation logic
+      console.log('document: ', conversation);
+      downloadConversation(conversation)
+    }
+  }
+
   useEffect(() => {
     if (cleared) {
       const timeout = setTimeout(() => {
@@ -57,7 +69,7 @@ export default function Home() {
       return () => clearTimeout(timeout)
     }
   }, [cleared])
-  
+
 
   return (
     <div className="flex h-[calc(100vh-3.9rem)] bg-slate-50 dark:bg-slate-900">
@@ -74,26 +86,42 @@ export default function Home() {
             {activeTab === "document-intelligence" && "Document Intelligence"}
           </h1>
 
-          {/* Model & Provider Info */}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  className="mb-2 hover:text-destructive transition-colors"
-                  aria-label="Clear this conversation"
-                  onClick={() => {
-                    // your clear conversation logic here
-                    clearConversation(activeTab)
-                  }}
-                >
-                  <Trash className="w-4 h-4" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Clear this conversation</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+
+          <div className="flex items-center space-x-10">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    className="hover:text-destructive transition-colors"
+                    aria-label="Clear this conversation"
+                    onClick={() => clearConversation(activeTab)}
+                  >
+                    <Trash className="w-4 h-4" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Clear this conversation</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    className="hover:text-destructive transition-colors"
+                    aria-label="Download this conversation"
+                    onClick={() => triggerConversationDownload(activeTab)}
+                  >
+                    <Download className="w-4 h-4" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Download this conversation</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
 
           <div className="text-sm text-muted-foreground flex flex-col items-end">
             {/* <div> */}
@@ -111,13 +139,13 @@ export default function Home() {
         <main className="flex-1 p-6 overflow-auto">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsContent value="chat" className="mt-0">
-              <ChatInterface key={`chat-${cleared}`} action={'digital-audit'} />
+              <ChatInterface setConversation={setConversation} key={`chat-${cleared}`} action={'digital-audit'} />
             </TabsContent>
             <TabsContent value="execute-analysis-scenario" className="mt-0">
-              <ChatInterface key={`execute-${cleared}`} action={'execute-analysis-scenario'} />
+              <ChatInterface setConversation={setConversation} key={`execute-${cleared}`} action={'execute-analysis-scenario'} />
             </TabsContent>
             <TabsContent value="document-intelligence" className="mt-0">
-              <ChatInterface key={`doc-${cleared}`} action={'document-intelligence'} />
+              <ChatInterface setConversation={setConversation} key={`doc-${cleared}`} action={'document-intelligence'} />
             </TabsContent>
           </Tabs>
         </main>

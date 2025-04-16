@@ -1,8 +1,5 @@
-// import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
-// import { Card, CardContent } from "../../../components/ui/card";
 import { Badge } from "../../../components/ui/badge";
-// import { ChevronDown, Paperclip } from "lucide-react";
 import { useEffect, useState } from "react";
 import UserInputs from "./userInputs";
 import { starterSuggestionsArray } from "../../globalConstants/useCaseConstants";
@@ -19,7 +16,6 @@ const StarterSuggestions = ({ suggestionObjectId, messages, setMessages }) => {
 
     useEffect(() => {
        suggestionObjectId && setSuggestionsObject(starterSuggestionsArray.find(item => item.id === suggestionObjectId))
-       
 
     }, [inputValue, suggestionObjectId])
 
@@ -33,10 +29,9 @@ const StarterSuggestions = ({ suggestionObjectId, messages, setMessages }) => {
                     <UserInputs promptInputValue={inputValue} setMessages={setMessages} />
                 </div>
                 <div>
-                    <p style={{ fontSize: '20px', marginBottom: '20px' }}>Or choose from the options below...</p>
+                    {/* <p style={{ fontSize: '20px', marginBottom: '20px' }}>Or choose from the options below...</p> */}
+                    <p style={{ fontSize: '20px', marginBottom: '20px' }}>{suggestionsObject?.promptOptionsMessage ? suggestionsObject?.promptOptionsMessage : "Or choose from the options below..."}</p>
                 </div>
-
-                {/* <div className="justify-center"> */}
 
                 <div className="flex flex-wrap justify-center gap-3">
                     {suggestionsObject?.topics?.map((suggestion) => (
@@ -66,7 +61,6 @@ const StarterSuggestions = ({ suggestionObjectId, messages, setMessages }) => {
                         </div>
                     </div>
                 )}
-                {/* </div> */}
             </div>
             <p className="absolute bottom-10 text-sm text-gray-500 mt-6">
                 <span className="italic font-semibold text-gray-700">AMY</span> could make mistakes. Please verify important information.
