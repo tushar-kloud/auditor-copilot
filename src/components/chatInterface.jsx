@@ -15,6 +15,7 @@ export default function ChatInterface({action}) {
   // const [suggestionObject, setSuggestionObject] = useState()
 
   const {actionInfo} = useSelector((state) => state.actionState)
+
   // const { actionInfo } = actionState
 
   const dispatch = useDispatch()
@@ -55,9 +56,5 @@ export default function ChatInterface({action}) {
         </div>
       </div>
     )
-
   )
 }
-
-
-{/* <StarterSuggestions message={messages} setMessages={setMessages} /> */ }
