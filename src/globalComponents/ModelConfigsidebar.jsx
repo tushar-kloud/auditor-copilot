@@ -1,15 +1,24 @@
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "../../srccomponents/ui/select.jsx"
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "../../srccomponents/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { cn } from "../lib/utils";
-import { handler } from "tailwindcss-animate";
 
 const MODEL_PROVIDERS = {
-  azureopenai: ["o3-mini","GPT-4o", "GPT-3.5-turbo", "GPT-4o-mini", "GPT-o3-mini"],
-  awsbedrock: ["Cladue 3.7 Sonnet v2", "Claude 3.5 Sonnet v2", "Claude 3.5 Haiku", "Calude 3 Haiku"],
+  azureopenai: [
+    { name: "GPT-4o", available: false },
+    { name: "GPT-3.5-turbo", available: false },
+    { name: "GPT-4o-mini", available: true },
+    { name: "o3-mini", available: true },
+  ],
+  awsbedrock: [
+    { name: "Claude 3.7 Sonnet v2", available: false },
+    { name: "Claude 3.5 Sonnet", available: true },
+    { name: "Claude 3.5 Haiku", available: false },
+    { name: "Claude 3 Haiku", available: false },
+  ],
 };
 
 const DEFAULT_PROVIDER = "azureopenai";
@@ -20,20 +29,25 @@ const ModelConfigSidebar = ({ setModel, setProvider }) => {
   const [provider, setLocalProvider] = useState(DEFAULT_PROVIDER);
   const [model, setLocalModel] = useState(DEFAULT_MODEL);
 
-
   useEffect(() => {
-    setProvider(DEFAULT_PROVIDER);
-    setModel(DEFAULT_MODEL);
-    localStorage.setItem("provider", "azureopenai");
-    localStorage.setItem("model", "o3-mini");
-  }, []);
+    // Load from localStorage if available, otherwise use defaults
+    const savedProvider = localStorage.getItem("provider") || DEFAULT_PROVIDER;
+    const savedModel = localStorage.getItem("model") || DEFAULT_MODEL;
+    
+    setLocalProvider(savedProvider);
+    setProvider(savedProvider);
+    
+    setLocalModel(savedModel);
+    setModel(savedModel);
+  }, [setProvider, setModel]);
 
   const handleProviderChange = (value) => {
     setLocalProvider(value);
     setProvider(value);
 
-    // Set default model based on provider
-    const defaultModel = value === "awsbedrock" ? "Claude 3.5 Sonnet v2" : "o3-mini";
+    // Set default model based on provider - pick first available model
+    const availableModels = MODEL_PROVIDERS[value].filter(model => model.available);
+    const defaultModel = availableModels.length > 0 ? availableModels[0].name : "";
 
     setLocalModel(defaultModel);
     setModel(defaultModel);
@@ -41,7 +55,6 @@ const ModelConfigSidebar = ({ setModel, setProvider }) => {
     localStorage.setItem("provider", value);
     localStorage.setItem("model", defaultModel);
   };
-
 
   const handleModelChange = (value) => {
     setLocalModel(value);
@@ -64,9 +77,9 @@ const ModelConfigSidebar = ({ setModel, setProvider }) => {
           className="shrink-0"
         >
           {collapsed ? (
-            <ChevronLeft className="w-5 h-5" />
-          ) : (
             <ChevronRight className="w-5 h-5" />
+          ) : (
+            <ChevronLeft className="w-5 h-5" />
           )}
         </Button>
         {!collapsed && (
@@ -82,7 +95,7 @@ const ModelConfigSidebar = ({ setModel, setProvider }) => {
             <div>
               <Label className="text-sm font-semibold">Select Model Provider</Label>
               <Select value={provider} onValueChange={handleProviderChange}>
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Choose Provider" />
                 </SelectTrigger>
                 <SelectContent>
@@ -92,26 +105,28 @@ const ModelConfigSidebar = ({ setModel, setProvider }) => {
               </Select>
             </div>
 
-            {/* Model Selection */}
-            {/* Model Selection */}
             {provider && (
               <div>
                 <Label className="text-sm font-semibold">Select Model</Label>
-                <Select value={model} onValueChange={() => { }}>
-                  <SelectTrigger>
+                <Select value={model} onValueChange={handleModelChange}>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Choose Model" />
                   </SelectTrigger>
                   <SelectContent>
-                    {MODEL_PROVIDERS[provider].map((m) => (
-                      <SelectItem key={m} value={m} disabled>
-                        {m}
+                    {MODEL_PROVIDERS[provider].map((modelOption) => (
+                      <SelectItem 
+                        key={modelOption.name} 
+                        value={modelOption.name} 
+                        disabled={!modelOption.available}
+                      >
+                        {modelOption.name}
+                        {!modelOption.available && " (unavailable)"}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
             )}
-
           </CardContent>
         </Card>
       )}

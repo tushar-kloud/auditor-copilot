@@ -84,7 +84,7 @@ const UserInputs = ({ showSuggestions, promptInputValue, setMessages }) => {
 
       try {
         const payload = {
-          input_value: `Use ${provider} resource to answer the following question: '${inputValue}'`,
+          input_value: `Use ${model} resource to answer the following question: '${inputValue}'`,
           output_type: "chat",
           input_type: "chat",
           tweaks: {
