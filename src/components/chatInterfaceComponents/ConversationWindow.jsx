@@ -3,24 +3,56 @@ import { cn } from "../../lib/utils";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-// Utility function to parse markdown-like syntax
 const parseSyntax = (text) => {
-  // Handling headers
-  let parsedText = text.replace(/###\s(.+)/g, '<h3 class="text-xl font-semibold">$1</h3>');
-  parsedText = parsedText.replace(/##\s(.+)/g, '<h2 class="text-lg font-semibold">$1</h2>');
-  parsedText = parsedText.replace(/#\s(.+)/g, '<h1 class="text-2xl font-bold">$1</h1>');
+  // Table parsing
+  const tableRegex = /\|(.+?)\|(?:\r?\n)\|(?:[-| ]+)\|((?:\r?\n\|.+\|)+)/g;
 
-  // Handling bold text
-  parsedText = parsedText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  text = text.replace(tableRegex, (_, headers, rows) => {
+    const headerCells = headers.split('|').map(h => `<th class="px-4 py-2 border">${h.trim()}</th>`).join('');
+    const bodyRows = rows
+      .trim()
+      .split('\n')
+      .map(row => {
+        const cells = row
+          .split('|')
+          .slice(1, -1)
+          .map(cell => `<td class="px-4 py-2 border">${cell.trim()}</td>`)
+          .join('');
+        return `<tr>${cells}</tr>`;
+      })
+      .join('');
 
-  // Handling unordered lists
-  parsedText = parsedText.replace(/- (.+)/g, '<ul><li>$1</li></ul>');
+    return `
+<div class="overflow-auto">
+  <table class="min-w-full border border-collapse text-left text-sm table-auto">
+    <thead class="bg-gray-100"><tr>${headerCells}</tr></thead>
+    <tbody>${bodyRows}</tbody>
+  </table>
+</div>
+`.trim();
+  });
 
-  // Handling line breaks (newlines to <br />)
-  parsedText = parsedText.replace(/\n/g, "<br />");
+  // Remove extra <br> tags around tables
+  text = text.replace(/(<br\s*\/?>)+\s*(<div class="overflow-auto">)/g, '$2');
+  text = text.replace(/(<\/table>\s*<\/div>)(<br\s*\/?>)+/g, '$1');
 
-  return parsedText;
+  // Headers
+  text = text.replace(/###\s(.+)/g, '<h3 class="text-xl font-semibold">$1</h3>');
+  text = text.replace(/##\s(.+)/g, '<h2 class="text-lg font-semibold">$1</h2>');
+  text = text.replace(/#\s(.+)/g, '<h1 class="text-2xl font-bold">$1</h1>');
+
+  // Bold text
+  text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+  // Unordered lists
+  text = text.replace(/^- (.+)$/gm, '<ul><li>$1</li></ul>');
+
+  // Newline to <br />, unless part of a table (handled already)
+  text = text.replace(/\n/g, "<br />");
+
+  return text;
 };
+
 
 const ConversationWindow = ({ messages, setMessages }) => {
   const messagesEndRef = useRef(null);
