@@ -90,9 +90,9 @@ const ModelConfigSidebar = ({ setModel, setProvider }) => {
           className="shrink-0"
         >
           {collapsed ? (
-            <ChevronRight className="w-5 h-5" />
-          ) : (
             <ChevronLeft className="w-5 h-5" />
+          ) : (
+            <ChevronRight className="w-5 h-5" />
           )}
         </Button>
         {!collapsed && (
