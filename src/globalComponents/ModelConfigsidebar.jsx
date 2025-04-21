@@ -7,13 +7,13 @@ import { Label } from "@/components/ui/label";
 import { cn } from "../lib/utils";
 
 const MODEL_PROVIDERS = {
-  azureopenai: [
+  'azure openai': [
     { name: "GPT-4o", available: false },
     { name: "GPT-3.5-turbo", available: false },
     { name: "GPT-4o-mini", available: true },
     { name: "o3-mini", available: true },
   ],
-  awsbedrock: [
+  'awsbedrock': [
     { name: "Claude 3.7 Sonnet v2", available: false },
     { name: "Claude 3.5 Sonnet", available: true },
     { name: "Claude 3.5 Haiku", available: false },
@@ -21,7 +21,7 @@ const MODEL_PROVIDERS = {
   ],
 };
 
-const DEFAULT_PROVIDER = "azureopenai";
+const DEFAULT_PROVIDER = "azure openai";
 const DEFAULT_MODEL = "o3-mini";
 
 const ModelConfigSidebar = ({ setModel, setProvider }) => {
@@ -33,10 +33,10 @@ const ModelConfigSidebar = ({ setModel, setProvider }) => {
     // Load from localStorage if available, otherwise use defaults
     const savedProvider = localStorage.getItem("provider") || DEFAULT_PROVIDER;
     const savedModel = localStorage.getItem("model") || DEFAULT_MODEL;
-    
+
     setLocalProvider(savedProvider);
     setProvider(savedProvider);
-    
+
     setLocalModel(savedModel);
     setModel(savedModel);
   }, [setProvider, setModel]);
@@ -46,7 +46,11 @@ const ModelConfigSidebar = ({ setModel, setProvider }) => {
     setProvider(value);
 
     // Set default model based on provider - pick first available model
-    const availableModels = MODEL_PROVIDERS[value].filter(model => model.available);
+    // const availableModels = MODEL_PROVIDERS[value].filter(model => model.available);
+    // const defaultModel = availableModels.length > 0 ? availableModels[0].name : "";
+
+    const models = MODEL_PROVIDERS[value] || [];
+    const availableModels = models.filter(model => model.available);
     const defaultModel = availableModels.length > 0 ? availableModels[0].name : "";
 
     setLocalModel(defaultModel);
@@ -61,6 +65,15 @@ const ModelConfigSidebar = ({ setModel, setProvider }) => {
     setModel(value);
     localStorage.setItem("model", value);
   };
+
+  useEffect(() => {
+    if (!localStorage.getItem("model")) {
+      localStorage.setItem("model", DEFAULT_MODEL)
+    }
+    if (!localStorage.getItem("provider")) {
+      localStorage.setItem("provider", DEFAULT_PROVIDER)
+    }
+  })
 
   return (
     <div
@@ -99,7 +112,7 @@ const ModelConfigSidebar = ({ setModel, setProvider }) => {
                   <SelectValue placeholder="Choose Provider" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="azureopenai">Azure OpenAI</SelectItem>
+                  <SelectItem value="azure openai">Azure OpenAI</SelectItem>
                   <SelectItem value="awsbedrock">AWS Bedrock</SelectItem>
                 </SelectContent>
               </Select>
@@ -114,9 +127,9 @@ const ModelConfigSidebar = ({ setModel, setProvider }) => {
                   </SelectTrigger>
                   <SelectContent>
                     {MODEL_PROVIDERS[provider].map((modelOption) => (
-                      <SelectItem 
-                        key={modelOption.name} 
-                        value={modelOption.name} 
+                      <SelectItem
+                        key={modelOption.name}
+                        value={modelOption.name}
                         disabled={!modelOption.available}
                       >
                         {modelOption.name}

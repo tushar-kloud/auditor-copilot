@@ -84,26 +84,26 @@ const UserInputs = ({ showSuggestions, promptInputValue, setMessages }) => {
 
       try {
         const payload = {
-          input_value: `Use ${model} resource to answer the following question: '${inputValue}'`,
+          input_value: `Use ${provider} ${model.toLocaleLowerCase()} resource to answer the following question: '${inputValue}'`,
           output_type: "chat",
           input_type: "chat",
-          tweaks: {
-            "Chroma-ZPruW": {
-              "allow_duplicates": false,
-              "chroma_server_cors_allow_origins": "",
-              "chroma_server_grpc_port": null,
-              "chroma_server_host": "",
-              "chroma_server_http_port": null,
-              "chroma_server_ssl_enabled": false,
-              "collection_name": "auditor-rag-session",
-              "limit": null,
-              "number_of_results": 10,
-              "persist_directory": "auditor-copilot",
-              "search_query": "",
-              "search_type": "Similarity",
-              "should_cache_vector_store": true
-            }
-          }
+          // tweaks: {
+          //   "Chroma-ZPruW": {
+          //     "allow_duplicates": false,
+          //     "chroma_server_cors_allow_origins": "",
+          //     "chroma_server_grpc_port": null,
+          //     "chroma_server_host": "",
+          //     "chroma_server_http_port": null,
+          //     "chroma_server_ssl_enabled": false,
+          //     "collection_name": "auditor-rag-session",
+          //     "limit": null,
+          //     "number_of_results": 10,
+          //     "persist_directory": "auditor-copilot",
+          //     "search_query": "",
+          //     "search_type": "Similarity",
+          //     "should_cache_vector_store": true
+          //   }
+          // }
         };
 
         const response = await fetch(

@@ -16,7 +16,6 @@
 // //         const input = 'Hello from the IMS system!'
 // //         const response = await aiPlaygroundClient.flow(flowId).run(input)
 // //         console.log('response:', response);
-        
 // //     }
 // //     catch(error){
 // //         console.log('Error:', error)

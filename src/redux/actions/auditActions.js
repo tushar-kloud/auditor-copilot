@@ -136,45 +136,70 @@ export const fileIngestionAPI = async (filePath) => {
     const flowId = flow.flowId;
 
     const response = await axios.post(
-        `${baseUrl}/api/v1/run/${flowId}?stream=false`,
-        {
-          output_type: "text",
-          input_type: "text",
-          tweaks: {
-            "File-YlTBO": {
-              concurrency_multithreading: 4,
-              delete_server_file_after_processing: true,
-              ignore_unspecified_files: false,
-              ignore_unsupported_extensions: true,
-              path: `${filePath}`,
-              silent_errors: false,
-              use_multithreading: false,
-            },
-            "Chroma-H2OEq": {
-              allow_duplicates: false,
-              chroma_server_cors_allow_origins: "",
-              chroma_server_grpc_port: null,
-              chroma_server_host: "",
-              chroma_server_http_port: null,
-              chroma_server_ssl_enabled: false,
-              collection_name: "auditor-rag-session",
-              limit: null,
-              number_of_results: 10,
-              persist_directory: "auditor-copilot",
-              search_query: "",
-              search_type: "Similarity",
-              should_cache_vector_store: true,
-            },
+      `${baseUrl}/api/v1/run/${flowId}?stream=false`,
+      {
+        output_type: "text",
+        input_type: "text",
+        tweaks: {
+          "File-YlTBO": {
+            concurrency_multithreading: 4,
+            delete_server_file_after_processing: true,
+            ignore_unspecified_files: false,
+            ignore_unsupported_extensions: true,
+            path: `${filePath}`,
+            silent_errors: false,
+            use_multithreading: false,
           },
+          "AstraDBGraph-G7Z3b": {
+            api_endpoint:
+              "https://ffb79266-f4ad-46b4-a2b0-0ece99e40c48-us-east-2.apps.astra.datastax.com",
+            batch_size: null,
+            bulk_delete_concurrency: null,
+            bulk_insert_batch_concurrency: null,
+            bulk_insert_overwrite_concurrency: null,
+            collection_indexing_policy: "",
+            collection_name: "graph_rag",
+            keyspace: "",
+            metadata_incoming_links_key: "",
+            metadata_indexing_exclude: "",
+            metadata_indexing_include: "",
+            metric: "cosine",
+            number_of_results: 4,
+            pre_delete_collection: false,
+            search_filter: {},
+            search_query: "",
+            search_score_threshold: 0,
+            search_type: "MMR (Max Marginal Relevance) Graph Traversal",
+            setup_mode: "Sync",
+            should_cache_vector_store: true,
+            token:
+              "AstraCS:yNimqLgxEautZaNTBskyHLTK:f6c0dd7abf584ecf7c171e61768cb5626536d552d52b03250aa39406bc3265a9",
+          },
+          // "Chroma-H2OEq": {
+          //   allow_duplicates: false,
+          //   chroma_server_cors_allow_origins: "",
+          //   chroma_server_grpc_port: null,
+          //   chroma_server_host: "",
+          //   chroma_server_http_port: null,
+          //   chroma_server_ssl_enabled: false,
+          //   collection_name: "auditor-rag-session",
+          //   limit: null,
+          //   number_of_results: 10,
+          //   persist_directory: "auditor-copilot",
+          //   search_query: "",
+          //   search_type: "Similarity",
+          //   should_cache_vector_store: true,
+          // },
         },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": `${API_KEY}`,
-          },
-        }
-      );
-      
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": `${API_KEY}`,
+        },
+      }
+    );
+
     return `Embedding created successfully for file: ${filePath}`;
   } catch (error) {
     console.log("Error:", error);
