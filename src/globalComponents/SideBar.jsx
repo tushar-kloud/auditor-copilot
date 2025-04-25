@@ -88,7 +88,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
         >
           {/* <FileText  /> */}
           <Rocket className="mr-2 h-4 w-4" />
-          {!collapsed && "Use-Case Labs"}
+          {!collapsed && "Usecase Labs"}
         </Button>
       </nav>
 
