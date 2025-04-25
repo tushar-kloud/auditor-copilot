@@ -30,8 +30,14 @@ export default function Home() {
     if (tab === "chat") {
       // Clear chat conversation logic
       setConversation("");
-      localStorage.removeItem("digital-audit-chatMessages")
+      localStorage.removeItem("new-chat-chatMessages")
       setCleared(true)
+    }
+      else if (tab === "digital-audit") {
+        // Clear chat conversation logic
+        setConversation("");
+        localStorage.removeItem("digital-audit-chatMessages")
+        setCleared(true)
     } else if (tab === "execute-analysis-scenario") {
       // Clear execute analysis scenario conversation logic
       setConversation("");
