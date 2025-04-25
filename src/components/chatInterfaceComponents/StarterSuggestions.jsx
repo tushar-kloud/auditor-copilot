@@ -30,7 +30,9 @@ const StarterSuggestions = ({ suggestionObjectId, messages, setMessages }) => {
                 </div>
                 <div>
                     {/* <p style={{ fontSize: '20px', marginBottom: '20px' }}>Or choose from the options below...</p> */}
-                    <p style={{ fontSize: '20px', marginBottom: '20px' }}>{suggestionsObject?.promptOptionsMessage ? suggestionsObject?.promptOptionsMessage : "Or choose from the options below..."}</p>
+                    <p style={{ fontSize: '20px', marginBottom: '20px' }}>{suggestionsObject?.promptOptionsMessage && suggestionsObject?.promptOptionsMessage 
+                    // : "Or choose from the options below..."
+                    }</p>
                 </div>
 
                 <div className="flex flex-wrap justify-center gap-3">
