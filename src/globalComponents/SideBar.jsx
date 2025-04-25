@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, MessageCircle, FileText, FileCheck, Settings, Rocket } from "lucide-react";
+import { ChevronLeft, ChevronRight, MessageCircle, FileText, FileCheck, Settings, Rocket, AppWindow } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "../lib/utils"
+// import {useNavigate} from "react-router-dom"
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
   const [collapsed, setCollapsed] = useState(false);
   //   const [activeTab, setActiveTab] = useState("chat");
+  // const navigate = useNavigate()
 
   return (
     <div
@@ -51,16 +53,17 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
           onClick={() => setActiveTab("chat")}
         >
           <MessageCircle className="mr-2 h-4 w-4" />
-          {!collapsed && "Digital Audit"}
+          {!collapsed && "New Chat"}
         </Button>
-        {/* <Button
-          variant={activeTab === "generate" ? "default" : "ghost"}
+        <Button
+          variant={activeTab === "digital-audit" ? "default" : "ghost"}
           className="w-full justify-start"
           onClick={() => setActiveTab("digital-audit")}
         >
-          <FileText className="mr-2 h-4 w-4" />
+          {/* <MessageCircle className="mr-2 h-4 w-4" /> */}
+          <AppWindow className="mr-2 h-4 w-4" />
           {!collapsed && "Digital Audit"}
-        </Button> */}
+        </Button>
         <Button
           variant={activeTab === "execute-analysis-scenario" ? "default" : "ghost"}
           className="w-full justify-start"
@@ -78,10 +81,10 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
           {!collapsed && "Document Intelligence"}
         </Button>
         <Button
-          disabled
+          // disabled
           variant={"ghost"}
           className="w-full justify-start"
-          onClick={() => setActiveTab("document-intelligence")}
+          onClick={() => window.open("https://genailabs.azurewebsites.net/", "_blank")}
         >
           {/* <FileText  /> */}
           <Rocket className="mr-2 h-4 w-4" />

@@ -81,7 +81,8 @@ export default function Home() {
       <div className="flex-1 flex flex-col">
         <header className="border-b bg-white dark:bg-slate-800 px-6 py-3 flex items-center justify-between">
           <h1 className="text-xl font-semibold">
-            {activeTab === "chat" && "Digital Audit"}
+            {activeTab === "chat" && "New Chat"}
+            {activeTab === "digital-audit" && "Digital Audit"}
             {activeTab === "execute-analysis-scenario" && "Execute Analysis Scenario"}
             {activeTab === "document-intelligence" && "Document Intelligence"}
           </h1>
@@ -140,7 +141,10 @@ export default function Home() {
         <main className="flex-1 p-6 overflow-auto">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsContent value="chat" className="mt-0">
-              <ChatInterface setConversation={setConversation} key={`chat-${cleared}`} action={'digital-audit'} />
+              <ChatInterface setConversation={setConversation} key={`chat-${cleared}`} action={'chat'} />
+            </TabsContent>
+            <TabsContent value="digital-audit" className="mt-0">
+              <ChatInterface setConversation={setConversation} key={`digital-${cleared}`} action={'digital-audit'} />
             </TabsContent>
             <TabsContent value="execute-analysis-scenario" className="mt-0">
               <ChatInterface setConversation={setConversation} key={`execute-${cleared}`} action={'execute-analysis-scenario'} />
