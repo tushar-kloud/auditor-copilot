@@ -7,12 +7,28 @@ import { Progress } from "@/components/ui/progress";
 import { Loader2, CheckCircle, AlertCircle } from "lucide-react";
 
 const tasks = [
-    { id: "account-verification", title: "Account Verification Status", description: "Check if an account is verified." },
-    { id: "activity-status", title: "Activity Status Verification", description: "Analyze recent activity for legitimacy." },
-    { id: "engagement-detector", title: "Concerned Engagement Detector", description: "Detect negative or abusive engagement." },
+    {
+      id: "account-verification",
+      title: "Account Verification Status",
+      description: "Check if an account is verified.",
+      platforms: ["Instagram", "Twitter", "TikTok"],
+    },
+    {
+      id: "activity-status",
+      title: "Activity Status Verification",
+      description: "Analyze recent activity for legitimacy.",
+      platforms: ["LinkedIn", "Instagram"],
+    },
+    {
+      id: "engagement-detector",
+      title: "Concerned Engagement Detector",
+      description: "Detect negative or abusive engagement.",
+      platforms: ["YouTube", "Reddit", "Facebook"],
+    },
   ];
   
-  const platforms = ["Facebook", "YouTube", "Instagram", "Twitter"];
+  
+//   const platforms = ["Facebook", "YouTube", "Instagram", "Twitter"];
 
 const DigitalAuditInterface = () => {
     const [step, setStep] = useState(1);
@@ -44,12 +60,21 @@ const DigitalAuditInterface = () => {
           
       };
     
-      const generateReport = () => {
+    //   const generateReport = () => {
+    //     const reportData = {
+    //       title: "My Analysis Report",
+    //       description: "Here are the findings from your analysis...",
+    //       availableSocials: ["twitter", "linkedin", "facebook"],  // ⭐️ customize per use case
+    //       // or maybe ["whatsapp", "instagram"] depending on report
+    //     };
+    //     setReport(reportData);
+    //   };
+    const generateReport = () => {
         setReport({
           status: "Success",
-          details: selectedTask === "account-verification"
+          details: selectedTask.id === "account-verification"
             ? `${handle} is verified ✅ on ${selectedPlatform}`
-            : `URL ${url} analyzed successfully for ${selectedTask}. No major issues detected.`
+            : `URL ${url} analyzed successfully for ${selectedTask.id}. No major issues detected.`
         });
       };
     
@@ -84,7 +109,7 @@ const DigitalAuditInterface = () => {
                 variant={selectedTask === task.id ? "default" : "outline"}
                 className="w-full justify-start"
                 onClick={() => {
-                  setSelectedTask(task.id);
+                  setSelectedTask(task);
                   setStep(2);
                 }}
               >
@@ -104,7 +129,7 @@ const DigitalAuditInterface = () => {
             <CardTitle>Select a Platform</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {platforms.map((platform) => (
+          {selectedTask && selectedTask.platforms.map((platform) => (
               <Button
                 key={platform}
                 variant={selectedPlatform === platform ? "default" : "outline"}
@@ -124,10 +149,10 @@ const DigitalAuditInterface = () => {
       {step === 3 && selectedPlatform && (
         <Card>
           <CardHeader>
-            <CardTitle>{selectedTask === "account-verification" ? "Select a Handle" : "Enter a URL"}</CardTitle>
+            <CardTitle>{selectedTask.id === "account-verification" ? "Select a Handle" : "Enter a URL"}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {selectedTask === "account-verification" ? (
+            {selectedTask.id === "account-verification" ? (
               dummyHandles.map((hnd) => (
                 <Button
                   key={hnd}
