@@ -14,7 +14,7 @@ const MODEL_PROVIDERS = {
     { name: "o3-mini", available: true },
   ],
   'awsbedrock': [
-    { name: "Claude 3.7 Sonnet v2", available: false },
+    { name: "Claude 3.7 Sonnet v1", available: true },
     { name: "Claude 3.5 Sonnet", available: true },
     { name: "Claude 3.5 Haiku", available: false },
     { name: "Claude 3 Haiku", available: false },
