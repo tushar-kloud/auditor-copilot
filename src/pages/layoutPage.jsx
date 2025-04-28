@@ -155,7 +155,7 @@ export default function Home() {
             </TabsContent> */}
             <TabsContent value="digital-audit" className="mt-0">
               {/* <ChatInterface setConversation={setConversation} key={`digital-${cleared}`} action={'digital-audit'} /> */}
-              <DigitalAuditInterface setConversation={setConversation} key={`digital-${cleared}`} action={'digital-audit'} />
+              <DigitalAuditInterface key={`digital-${cleared}`} action={'digital-audit'} />
             </TabsContent>
             <TabsContent value="execute-analysis-scenario" className="mt-0">
               <ChatInterface setConversation={setConversation} key={`execute-${cleared}`} action={'execute-analysis-scenario'} />

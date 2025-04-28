@@ -6,7 +6,7 @@ import { Badge } from "../../../components/ui/badge";
 import FileUploadDialog from "./FileUploadDialog";
 import { cn } from "../../lib/utils";
 import { starterSuggestionsArray } from "../../globalConstants/useCaseConstants";
-import { AI_PLAYGROUND_WORKFLOWS } from "../../redux/actions/auditActions";
+import { AI_PLAYGROUND_WORKFLOWS } from "../../redux/actions/chatActions";
 
 const UserInputs = ({ showSuggestions, promptInputValue, setMessages }) => {
   const [inputValue, setInputValue] = useState("");

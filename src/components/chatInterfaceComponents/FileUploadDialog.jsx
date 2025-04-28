@@ -9,7 +9,7 @@ import {
 } from "../../../components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
-import { uploadFileAPI } from "../../redux/actions/auditActions";
+import { uploadFileAPI } from "../../redux/actions/chatActions";
 
 // import { useDispatch } from "react-redux";
 
