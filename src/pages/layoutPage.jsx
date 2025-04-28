@@ -8,6 +8,7 @@ import ModelConfigsidebar from "../globalComponents/ModelConfigsidebar"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../components/ui/tooltip"
 import { Trash } from "lucide-react";
 import downloadConversation from "../hooks/downloadConversation"
+import DigitalAuditInterface from "../components/digital-audit/digitalAuditInterface"
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("chat")
@@ -149,8 +150,12 @@ export default function Home() {
             <TabsContent value="chat" className="mt-0">
               <ChatInterface setConversation={setConversation} key={`chat-${cleared}`} action={'chat'} />
             </TabsContent>
-            <TabsContent value="digital-audit" className="mt-0">
+            {/* <TabsContent value="digital-audit" className="mt-0">
               <ChatInterface setConversation={setConversation} key={`digital-${cleared}`} action={'digital-audit'} />
+            </TabsContent> */}
+            <TabsContent value="digital-audit" className="mt-0">
+              {/* <ChatInterface setConversation={setConversation} key={`digital-${cleared}`} action={'digital-audit'} /> */}
+              <DigitalAuditInterface setConversation={setConversation} key={`digital-${cleared}`} action={'digital-audit'} />
             </TabsContent>
             <TabsContent value="execute-analysis-scenario" className="mt-0">
               <ChatInterface setConversation={setConversation} key={`execute-${cleared}`} action={'execute-analysis-scenario'} />

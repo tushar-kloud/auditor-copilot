@@ -14,7 +14,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
       className={cn(
         // h-full
         "h-full transition-all border-r bg-white dark:bg-slate-800 p-4 flex flex-col",
-        collapsed ? "w-16" : "w-140"
+        collapsed ? "w-16" : "w-120"
       )}
     >
       <div className="flex items-center justify-between mb-4">
