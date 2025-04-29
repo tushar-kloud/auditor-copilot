@@ -54,16 +54,16 @@ export default function Home() {
 
   const triggerConversationDownload = (tab) => {
     if (tab === "chat") {
-      console.log('chat: ', conversation);
+      // console.log('chat: ', conversation);
       downloadConversation(conversation)
     } else if (tab === "execute-analysis-scenario") {
       // Clear execute analysis scenario conversation logic
-      console.log('execute: ', conversation);
+      // console.log('execute: ', conversation);
       downloadConversation(conversation)
 
     } else if (tab === "document-intelligence") {
       // Clear document intelligence conversation logic
-      console.log('document: ', conversation);
+      // console.log('document: ', conversation);
       downloadConversation(conversation)
     }
   }

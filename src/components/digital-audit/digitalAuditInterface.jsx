@@ -5,8 +5,9 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Loader2, CheckCircle, AlertCircle } from "lucide-react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setAction } from "../../redux/actions/actionActions";
+import { auditAccountVerificationAPI, auditActivityStatusVerificationAPI, auditCensoredDetectionAPI } from "../../redux/actions/auditActions";
 
 const tasks = [
     {
@@ -23,16 +24,55 @@ const tasks = [
     },
     {
         id: "engagement-detector",
-        title: "Concerned Engagement Detector",
+        title: "Detect controversial interactions",
         description: "Identify harmful or inappropriate interactions.",
         platforms: ["Twitter"],
     },
 ];
 
+const brandHandles = [
+    "Aashirvaad",
+    "Sunfeast",
+    "Bingo!",
+    "Kitchens of India",
+    "Sunfeast Yippee!",
+    "B Natural",
+    "Sunfeast Milkshake",
+    "mint-o",
+    "Candyman",
+    "Jelimals",
+    "GumOn",
+    "Fabelle",
+    "Sunbean",
+    "ITC Master Chef",
+    "Farmland",
+    "Sunrise",
+    "Right Shift",
+    "Sunfeast Fantastik!",
+
+    "EDW Essenza",
+    "Dermafique",
+    "Fiama",
+    "Vivel",
+    "Engage",
+    "Superia",
+    "Nimyle",
+    "Nimeasy",
+    "Nimwash",
+    "SavlonShower to Shower",
+    "Charmis",
+
+    "Classmate",
+    "Paperkraft",
+
+    "AIM",
+    "Homelites",
+    "Dazzle",
+    "Mangaldeep"];
 
 //   const platforms = ["Facebook", "YouTube", "Instagram", "Twitter"];
 
-const DigitalAuditInterface = ({action}) => {
+const DigitalAuditInterface = ({ action }) => {
     const [step, setStep] = useState(1);
     const [selectedTask, setSelectedTask] = useState(null);
     const [selectedPlatform, setSelectedPlatform] = useState(null);
@@ -42,48 +82,38 @@ const DigitalAuditInterface = ({action}) => {
     const [progress, setProgress] = useState(0);
     const [report, setReport] = useState(null);
 
-    const brandHandles = [
-        "Aashirvaad",
-        "Sunfeast",
-        "Bingo!",
-        "Kitchens of India",
-        "Sunfeast Yippee!",
-        "B Natural",
-        "Sunfeast Milkshake",
-        "mint-o",
-        "Candyman",
-        "Jelimals",
-        "GumOn",
-        "Fabelle",
-        "Sunbean",
-        "ITC Master Chef",
-        "Farmland",
-        "Sunrise",
-        "Right Shift",
-        "Sunfeast Fantastik!",
+    const dispatch = useDispatch();
 
-        "EDW Essenza",
-        "Dermafique",
-        "Fiama",
-        "Vivel",
-        "Engage",
-        "Superia",
-        "Nimyle",
-        "Nimeasy",
-        "Nimwash",
-        "SavlonShower to Shower",
-        "Charmis",
-        
-        "Classmate",
-        "Paperkraft",
-        
-        "AIM",
-        "Homelites",
-        "Dazzle",
-        "Mangaldeep"];
+    const auditAccountVerification = useSelector((state) => state.auditAccountVerification);
+    const { loading: loadingAccountVerification, error: errorAccountVerification, success: successAccountVerification, accountVerificationInfo } = auditAccountVerification;
+
+    const auditActivityStatusVerification = useSelector((state) => state.auditActivityStatusVerification);
+    const { loading: loadingActivityStatusVerification, error: errorActivityStatusVerification, success: successActivityStatusVerification, activityStatusVerificationInfo } = auditActivityStatusVerification;
+
+    const auditCensoredDetection = useSelector((state) => state.auditCensoredDetection);
+    const { loading: loadingCensoredDetection, error: errorCensoredDetection, success: successCensoredDetection, censoredDetectionInfo } = auditCensoredDetection;
+
+    // console.log('platform: ',accountVerificationInfo.platform);
+
+    //     console.log(`Platform: ${data.platform}\n`);
+    // console.log("Detailed Report:\n");
+
 
     const startProcessing = () => {
         setLoading(true);
+        let taskInterval = 300; // default interval
+
+        if (selectedTask.id === "account-verification") {
+            dispatch(auditAccountVerificationAPI(selectedPlatform, handle));
+            taskInterval = 600; // faster progress for this task
+        } else if (selectedTask.id === "activity-status") {
+            dispatch(auditActivityStatusVerificationAPI(selectedPlatform, url));
+            taskInterval = 300; // slower progress for this task
+        } else if (selectedTask.id === "engagement-detector") {
+            dispatch(auditCensoredDetectionAPI(selectedPlatform, url));
+            taskInterval = 400; // even slower progress for this task
+        }
+
         setProgress(0);
 
         const interval = setInterval(() => {
@@ -96,19 +126,9 @@ const DigitalAuditInterface = ({action}) => {
                 }
                 return prev + 10;
             });
-        }, 150);
-
+        }, taskInterval);
     };
 
-    //   const generateReport = () => {
-    //     const reportData = {
-    //       title: "My Analysis Report",
-    //       description: "Here are the findings from your analysis...",
-    //       availableSocials: ["twitter", "linkedin", "facebook"],  // ⭐️ customize per use case
-    //       // or maybe ["whatsapp", "instagram"] depending on report
-    //     };
-    //     setReport(reportData);
-    //   };
     const generateReport = () => {
         setReport({
             status: "Success",
@@ -129,21 +149,19 @@ const DigitalAuditInterface = ({action}) => {
         setLoading(false);
     };
 
-    const dispatch = useDispatch();
-
     useEffect(() => {
         if (!loading && report && step === 4) {
             setStep(5);
         }
     }, [loading, report, step]);
 
-     useEffect(() => {
+    useEffect(() => {
 
-        if(action){
-          dispatch(setAction(action))
+        if (action) {
+            dispatch(setAction(action))
         }
 
-      }, [])
+    }, [])
 
     return (
         <div className="max-w-2xl mx-auto space-y-6 py-10">
@@ -159,6 +177,7 @@ const DigitalAuditInterface = ({action}) => {
                                     key={task.id}
                                     onClick={() => {
                                         setSelectedTask(task);
+                                        setReport(null)
                                         setStep(2);
                                     }}
                                     className={`cursor-pointer transition-all hover:shadow-lg border ${selectedTask?.id === task.id ? "border-primary" : "border-muted"
@@ -174,8 +193,6 @@ const DigitalAuditInterface = ({action}) => {
                             ))}
                         </div>
                     </CardContent>
-
-
                 </Card>
             )}
 
@@ -192,6 +209,7 @@ const DigitalAuditInterface = ({action}) => {
                                 className="w-full justify-start"
                                 onClick={() => {
                                     setSelectedPlatform(platform);
+                                    setReport(null)
                                     setStep(3);
                                 }}
                             >
@@ -209,22 +227,23 @@ const DigitalAuditInterface = ({action}) => {
                     </CardHeader>
                     <CardContent className="space-y-4">
                         {selectedTask.id === "account-verification" ? (
-                           <div className="grid grid-cols-3 gap-4">
-                           {brandHandles.map((hnd) => (
-                             <Button
-                               key={hnd}
-                               variant={handle === hnd ? "default" : "outline"}
-                               className="w-full justify-start"
-                               onClick={() => {
-                                 setHandle(hnd);
-                                 setStep(4);
-                               }}
-                             >
-                               {hnd}
-                             </Button>
-                           ))}
-                         </div>
-                         
+                            <div className="grid grid-cols-3 gap-4">
+                                {brandHandles.map((hnd) => (
+                                    <Button
+                                        key={hnd}
+                                        variant={handle === hnd ? "default" : "outline"}
+                                        className="w-full justify-start"
+                                        onClick={() => {
+                                            setHandle(hnd);
+                                            setReport(null)
+                                            setStep(4);
+                                        }}
+                                    >
+                                        {hnd}
+                                    </Button>
+                                ))}
+                            </div>
+
                         ) : (
                             <>
                                 <Label htmlFor="url">Social Media Post/Content URL</Label>
@@ -270,21 +289,90 @@ const DigitalAuditInterface = ({action}) => {
                 </Card>
             )}
 
-            {step >= 5 && report && (
+            {step >= 5 && selectedTask && (
                 <Card>
                     <CardHeader>
                         <CardTitle>Report</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-2">
-                        <div className="flex items-center space-x-2">
-                            {report.status === "Success" ? (
-                                <CheckCircle className="text-green-500 w-6 h-6" />
-                            ) : (
-                                <AlertCircle className="text-red-500 w-6 h-6" />
-                            )}
-                            <span className="font-medium">{report.status}</span>
-                        </div>
-                        <p className="text-sm">{report.details}</p>
+                        {(() => {
+                            let report;
+                            switch (selectedTask.id) {
+                                case "account-verification":
+                                    report = accountVerificationInfo;
+                                    break;
+                                case "activity-status":
+                                    report = activityStatusVerificationInfo;
+                                    break;
+                                case "engagement-detector":
+                                    report = censoredDetectionInfo;
+                                    break;
+                                default:
+                                    report = null;
+                            }
+
+                            if (!report) return <p>No report available.</p>;
+
+                            return (
+                                <>
+                                    <div className="flex items-center space-x-2">
+                                        {report ? (
+                                            <CheckCircle className="text-green-500 w-6 h-6" />
+                                        ) : (
+                                            <AlertCircle className="text-red-500 w-6 h-6" />
+                                        )}
+                                    </div>
+                                    {selectedTask.id == 'account-verification' ?
+                                        <div className="text-sm whitespace-pre-line overflow-auto max-h-60 break-words p-4 rounded bg-gray-50 border border-gray-200 space-y-2">
+                                            <p><strong>Platform:</strong> {accountVerificationInfo?.platform}</p>
+
+                                            <p><strong>Total URLs Checked:</strong> {accountVerificationInfo?.urls_checked?.length}</p>
+
+                                            <div>
+                                                <p className="font-semibold">✅ Verified URLs ({accountVerificationInfo?.verified_urls?.length}):</p>
+                                                <ul className="list-disc ml-5">
+                                                    {accountVerificationInfo?.verified_urls?.map((url, idx) => (
+                                                        <li key={`verified-${idx}`}>
+                                                            <a href={url} className="text-blue-600 underline" target="_blank" rel="noopener noreferrer">{url}</a>
+                                                        </li>
+                                                    ))}
+                                                    {accountVerificationInfo?.verified_urls?.length === 0 && (
+                                                        <li className="italic text-gray-500">None</li>
+                                                    )}
+                                                </ul>
+                                            </div>
+
+                                            <div>
+                                                <p className="font-semibold">❌ Unverified URLs ({accountVerificationInfo?.unverified_urls?.length}):</p>
+                                                <ul className="list-disc ml-5">
+                                                    {accountVerificationInfo?.unverified_urls?.map((url, idx) => (
+                                                        <li key={`unverified-${idx}`}>
+                                                            <a href={url} className="text-blue-600 underline" target="_blank" rel="noopener noreferrer">{url}</a>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+
+                                            <div>
+                                                <p className="font-semibold">📋 Detailed Results:</p>
+                                                <ul className="list-none ml-2">
+                                                    {accountVerificationInfo?.detailed_results?.map((result, idx) => (
+                                                        <li key={`detail-${idx}`} className="mb-1">
+                                                            <a href={result.url} className="text-blue-600 underline" target="_blank" rel="noopener noreferrer">
+                                                                {result.url}
+                                                            </a> — <span className={result.verified ? "text-green-600" : "text-red-600"}>{result.message}</span>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        : <div className="text-sm whitespace-pre-line overflow-auto max-h-60 break-words p-2 rounded bg-gray-50 border border-gray-200">
+                                            {report}
+                                        </div>
+                                    }
+                                </>
+                            );
+                        })()}
                     </CardContent>
                     <CardFooter className="justify-end">
                         <Button variant="outline" onClick={reset}>

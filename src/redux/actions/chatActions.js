@@ -1,11 +1,11 @@
 import axios from "axios";
 
 // const baseUrl = 'https://langflow-v3-large.salmonisland-47da943e.centralindia.azurecontainerapps.io'
-const baseUrl = import.meta.env.VITE_AI_PLAYGROUND_BASE_URL;
+export const baseUrl = import.meta.env.VITE_AI_PLAYGROUND_BASE_URL;
 // https://langflow-v3-large.salmonisland-47da943e.centralindia.azurecontainerapps.io/api/v1/run/adda70b1-e24a-4610-926a-ca8b80ed8a02?stream=false
 // const flowId = '91a3d1f1-fa91-4aff-a334-140860535fae'
 
-const API_KEY = import.meta.env.VITE_AI_PLAYGROUND_API_KEY;
+export const API_KEY = import.meta.env.VITE_AI_PLAYGROUND_API_KEY;
 
 
 export const AI_PLAYGROUND_WORKFLOWS = {
