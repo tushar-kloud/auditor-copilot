@@ -96,7 +96,7 @@ const DigitalAuditInterface = ({ action }) => {
     // console.log('platform: ',accountVerificationInfo.platform);
 
     //     console.log(`Platform: ${data.platform}\n`);
-    // console.log("Detailed Report:\n");
+    // `console.log`("Detailed Report:\n");
 
 
     const startProcessing = () => {
